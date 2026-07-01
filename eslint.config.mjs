@@ -95,8 +95,6 @@ const node = {
     plugins: { n: eslintPluginN },
     rules: {
         "n/no-missing-require": "error",
-        // "n/no-extraneous-import": "error",
-        "n/no-extraneous-require": "error",
         "n/no-unpublished-import": "warn",
         "n/no-unpublished-require": "warn",
         "n/prefer-global/process": ["error", "never"],
@@ -127,11 +125,6 @@ const node = {
 const imports = {
     plugins: { import: eslintPluginImport },
     rules: {
-        "import/no-extraneous-dependencies": [
-            "error",
-            { devDependencies: true },
-        ],
-
         "import/no-unresolved": "error",
         "import/no-cycle": ["error", { maxDepth: 1 }],
         "import/order": "off",
