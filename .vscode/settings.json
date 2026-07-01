@@ -1,3 +1,5 @@
 {
-  "material-icon-theme.activeIconPack": "nest"
+  "material-icon-theme.activeIconPack": "nest",
+  "cSpell.words": ["darraghor"],
+  "js/ts.tsdk.path": "node_modules\\typescript\\lib"
 }
