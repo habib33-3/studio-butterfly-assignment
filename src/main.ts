@@ -4,6 +4,7 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { env } from "./common/env/env.config";
 import { GlobalExceptionFilter } from "./common/filters/global-exception.filter";
+import { setupSwagger } from "./common/swagger/swagger.config";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -21,6 +22,10 @@ async function bootstrap() {
             whitelist: true,
         })
     );
+
+    setupSwagger(app);
+
+    app.setGlobalPrefix("api/v1");
 
     app.enableShutdownHooks();
 
