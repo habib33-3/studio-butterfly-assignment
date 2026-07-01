@@ -163,7 +163,7 @@ const quality = {
         "no-var": "error",
         "prefer-const": "error",
         "object-shorthand": ["error", "always"],
-        "no-console": "error",
+        "no-console": ["error", { allow: ["warn", "error", "info"] }],
         "no-debugger": "error",
         "no-eval": "error",
         "no-new-func": "error",
