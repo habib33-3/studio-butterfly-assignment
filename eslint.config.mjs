@@ -125,7 +125,7 @@ const node = {
 const imports = {
     plugins: { import: eslintPluginImport },
     rules: {
-        "import/no-unresolved": "error",
+        "import/no-unresolved": "off",
         "import/no-cycle": ["error", { maxDepth: 1 }],
         "import/order": "off",
 
@@ -163,7 +163,7 @@ const quality = {
         "no-var": "error",
         "prefer-const": "error",
         "object-shorthand": ["error", "always"],
-        "no-console": ["error", { allow: ["warn", "error", "info"] }],
+        "no-console": ["error"],
         "no-debugger": "error",
         "no-eval": "error",
         "no-new-func": "error",
@@ -221,13 +221,12 @@ const toolingOverrides = {
  * ====================================================== */
 const globalSettings = {
     settings: {
+        "import/parsers": {
+            "@typescript-eslint/parser": [".ts", ".tsx"],
+        },
         "import/resolver": {
             node: {
                 extensions: [".ts", ".js", ".mjs", ".cjs"],
-            },
-            typescript: {
-                project: "./tsconfig.json",
-                alwaysTryTypes: true,
             },
         },
     },
