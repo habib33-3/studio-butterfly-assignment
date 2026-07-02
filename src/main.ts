@@ -1,4 +1,4 @@
-import { ValidationPipe } from "@nestjs/common";
+import { Logger, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 
 import { AppModule } from "./app.module";
@@ -25,11 +25,16 @@ async function bootstrap() {
 
     setupSwagger(app);
 
-    app.setGlobalPrefix("api/v1");
-
     app.enableShutdownHooks();
 
+    const logger = new Logger("Bootstrap");
+
     await app.listen(env.PORT ?? 5000);
+
+    logger.log(`Application listening on port ${env.PORT ?? 5000}`);
+    logger.log(
+        `Swagger documentation available at http://localhost:${env.PORT ?? 5000}/api/docs`
+    );
 }
 
 bootstrap().catch((err) => {
