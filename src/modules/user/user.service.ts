@@ -1,18 +1,28 @@
 import {
     BadRequestException,
     Injectable,
+    NotFoundException,
     UnauthorizedException,
 } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
 
 import * as argon2 from "argon2";
 import { PrismaService } from "src/common/prisma/prisma.service";
+import { JwtPayload } from "src/type/types";
 
 import { UserLoginDto } from "./dto/user-login";
 import { UserRegistrationDto } from "./dto/user-registration.dto";
 
 @Injectable()
 export class UserService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly jwtService: JwtService
+    ) {}
+
+    private async generateJwtToken(payload: JwtPayload) {
+        return this.jwtService.signAsync(payload);
+    }
 
     async registration(payload: UserRegistrationDto) {
         const existUser = await this.prisma.user.findUnique({
@@ -41,7 +51,15 @@ export class UserService {
             },
         });
 
-        return user;
+        const accessToken = await this.generateJwtToken({
+            sub: user.id,
+            email: user.email,
+        });
+
+        return {
+            user,
+            accessToken,
+        };
     }
 
     async login(payload: UserLoginDto) {
@@ -66,6 +84,33 @@ export class UserService {
 
         const { password, ...userWithoutPassword } = user;
 
-        return userWithoutPassword;
+        const accessToken = await this.generateJwtToken({
+            sub: user.id,
+            email: user.email,
+        });
+
+        return {
+            user: userWithoutPassword,
+            accessToken,
+        };
+    }
+
+    async getCurrentUser(userId: string) {
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+            },
+        });
+
+        if (!user) {
+            throw new NotFoundException("User not found");
+        }
+
+        return user;
     }
 }
