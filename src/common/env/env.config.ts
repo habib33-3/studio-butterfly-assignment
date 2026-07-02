@@ -1,5 +1,6 @@
 /* eslint-disable n/prefer-global/process */
 import "dotenv/config";
+import ms from "ms";
 import z from "zod";
 
 export const envSchema = z.object({
@@ -9,6 +10,16 @@ export const envSchema = z.object({
     PORT: z.coerce.number().default(5000),
     DATABASE_URL: z.url(),
     JWT_SECRET: z.string().min(1),
+    ACCESS_TOKEN_EXPIRES: z
+        .string()
+        .transform((val) => {
+            const parsed = ms(val as ms.StringValue);
+            if (typeof parsed !== "number") {
+                throw new Error(`Invalid ACCESS_TOKEN_EXPIRES: ${val}`);
+            }
+            return parsed;
+        })
+        .default(ms("1h")),
 });
 
 export type Env = z.infer<typeof envSchema>;

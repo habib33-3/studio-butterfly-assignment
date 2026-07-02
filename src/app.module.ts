@@ -6,6 +6,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { validateEnv } from "./common/env/env.config";
 import { PrismaModule } from "./common/prisma/prisma.module";
+import { ProductModule } from "./modules/product/product.module";
 import { JwtAuthGuard } from "./modules/user/guard/auth.guard";
 import { UserModule } from "./modules/user/user.module";
 
@@ -14,6 +15,7 @@ import { UserModule } from "./modules/user/user.module";
         ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
         PrismaModule,
         UserModule,
+        ProductModule,
     ],
     controllers: [AppController],
     providers: [
