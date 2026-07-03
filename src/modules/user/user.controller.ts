@@ -17,6 +17,7 @@ export class UserController {
     @ApiOperation({
         summary: "Register a new user",
         description: "Creates a new user account with the provided details.",
+        security: [],
     })
     async register(@Body() payload: UserRegistrationDto) {
         return this.userService.registration(payload);
@@ -27,6 +28,7 @@ export class UserController {
     @ApiOperation({
         summary: "User login",
         description: "Authenticates a user with email and password.",
+        security: [],
     })
     async login(@Body() payload: UserLoginDto) {
         return this.userService.login(payload);

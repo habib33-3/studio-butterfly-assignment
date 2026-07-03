@@ -23,6 +23,7 @@ export class OrderService {
                     id: true,
                     name: true,
                     category: true,
+                    price: true,
                 },
             });
 
@@ -52,6 +53,8 @@ export class OrderService {
 
             const orderId = generateOrderId(product.name, product.category);
 
+            const total = payload.quantity * Number(product.price);
+
             return tx.order.create({
                 data: {
                     orderId,
@@ -59,6 +62,7 @@ export class OrderService {
                     productId: payload.productId,
                     quantity: payload.quantity,
                     address: payload.address,
+                    total,
                 },
             });
         });

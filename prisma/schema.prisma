@@ -51,6 +51,7 @@ model Order {
   quantity Int         @default(1)
   status   OrderStatus @default(PENDING)
   address  String
+  total    Decimal @db.Decimal(10, 2)
 
   orderedAt      DateTime  @default(now())
   shippedAt      DateTime?

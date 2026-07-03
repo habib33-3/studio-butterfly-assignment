@@ -1,5 +1,5 @@
 {
   "material-icon-theme.activeIconPack": "nest",
-  "cSpell.words": ["darraghor"],
+  "cSpell.words": ["darraghor", "fkey"],
   "js/ts.tsdk.path": "node_modules\\typescript\\lib"
 }
