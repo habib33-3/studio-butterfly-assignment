@@ -24,12 +24,19 @@ export class OrderService {
                     name: true,
                     category: true,
                     price: true,
+                    userId: true,
                 },
             });
 
             if (!product) {
                 throw new NotFoundException(
                     `Product not found with id ${payload.productId}`
+                );
+            }
+
+            if (product.userId === userId) {
+                throw new BadRequestException(
+                    "You cannot order your own product"
                 );
             }
 

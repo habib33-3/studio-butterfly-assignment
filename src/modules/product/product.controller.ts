@@ -12,6 +12,8 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiQuery, ApiTags } from "@nestjs/swagger";
 
+import { CurrentUser } from "src/common/decorator/current-user.decorator";
+
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import { ProductService } from "./product.service";
@@ -27,8 +29,11 @@ export class ProductController {
         description:
             "Creates a new product with its name, category, price, and stock quantity.",
     })
-    async createProduct(@Body() payload: CreateProductDto) {
-        return this.productService.createProduct(payload);
+    async createProduct(
+        @Body() payload: CreateProductDto,
+        @CurrentUser("sub") userId: string
+    ) {
+        return this.productService.createProduct(payload, userId);
     }
 
     @Get()
@@ -123,9 +128,10 @@ export class ProductController {
     })
     async updateProduct(
         @Param("id") id: string,
-        @Body() payload: UpdateProductDto
+        @Body() payload: UpdateProductDto,
+        @CurrentUser("sub") userId: string
     ) {
-        return this.productService.updateProduct(id, payload);
+        return this.productService.updateProduct(id, payload, userId);
     }
 
     @Delete(":id")
@@ -138,7 +144,10 @@ export class ProductController {
         summary: "Delete a product by ID",
         description: "Deletes a product by its unique identifier.",
     })
-    async deleteProduct(@Param("id") id: string) {
-        return this.productService.deleteProduct(id);
+    async deleteProduct(
+        @Param("id") id: string,
+        @CurrentUser("sub") userId: string
+    ) {
+        return this.productService.deleteProduct(id, userId);
     }
 }

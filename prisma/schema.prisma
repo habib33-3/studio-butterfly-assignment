@@ -20,9 +20,10 @@ model User {
   email    String @unique
   password String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   orders    Order[]
+  products  Product[]
 
   @@map("users")
 }
@@ -35,9 +36,13 @@ model Product {
   price         Decimal @db.Decimal(10, 2)
   stockQuantity Int     @default(0)
 
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  orders    Order[]
+
+  orders Order[]
 
   @@index([category])
   @@map("products")
@@ -51,7 +56,7 @@ model Order {
   quantity Int         @default(1)
   status   OrderStatus @default(PENDING)
   address  String
-  total    Decimal @db.Decimal(10, 2)
+  total    Decimal     @db.Decimal(10, 2)
 
   orderedAt      DateTime  @default(now())
   shippedAt      DateTime?

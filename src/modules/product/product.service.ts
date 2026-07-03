@@ -14,13 +14,14 @@ import { UpdateProductDto } from "./dto/update-product.dto";
 export class ProductService {
     constructor(private readonly prisma: PrismaService) {}
 
-    async createProduct(payload: CreateProductDto) {
+    async createProduct(payload: CreateProductDto, userId: string) {
         const product = await this.prisma.product.create({
             data: {
                 name: payload.name,
                 price: payload.price,
                 category: payload.category,
                 stockQuantity: payload.quantity,
+                userId,
             },
         });
 
@@ -85,6 +86,22 @@ export class ProductService {
             where: {
                 id,
             },
+            select: {
+                id: true,
+                name: true,
+                category: true,
+                price: true,
+                stockQuantity: true,
+                createdAt: true,
+                updatedAt: true,
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+            },
         });
 
         if (!product) {
@@ -94,9 +111,9 @@ export class ProductService {
         return product;
     }
 
-    async updateProduct(id: string, payload: UpdateProductDto) {
+    async updateProduct(id: string, payload: UpdateProductDto, userId: string) {
         const product = await this.prisma.product.findUnique({
-            where: { id },
+            where: { id, userId },
         });
 
         if (!product) {
@@ -112,14 +129,14 @@ export class ProductService {
         }
 
         return this.prisma.product.update({
-            where: { id },
+            where: { id, userId },
             data: updateData,
         });
     }
 
-    async deleteProduct(id: string) {
+    async deleteProduct(id: string, userId: string) {
         const product = await this.prisma.product.findUnique({
-            where: { id },
+            where: { id, userId },
         });
 
         if (!product) {
@@ -127,7 +144,7 @@ export class ProductService {
         }
 
         await this.prisma.product.delete({
-            where: { id },
+            where: { id, userId },
         });
 
         return { message: `Product with ID ${id} has been deleted` };
