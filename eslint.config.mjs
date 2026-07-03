@@ -180,7 +180,7 @@ const quality = {
 
         // Code quality
         "sonarjs/no-identical-conditions": "error",
-        "sonarjs/no-duplicate-string": "warn",
+
         "sonarjs/cognitive-complexity": ["warn", 20],
 
         // Unicorn (DX-safe)

@@ -44,5 +44,5 @@ export class CreateProductDto {
     })
     @IsInt()
     @Min(0)
-    quantity: number;
+    stockQuantity: number;
 }

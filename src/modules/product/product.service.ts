@@ -20,7 +20,7 @@ export class ProductService {
                 name: payload.name,
                 price: payload.price,
                 category: payload.category,
-                stockQuantity: payload.quantity,
+                stockQuantity: payload.stockQuantity,
                 userId,
             },
         });

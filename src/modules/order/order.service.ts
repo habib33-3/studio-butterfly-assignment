@@ -270,58 +270,86 @@ export class OrderService {
     }
 
     async markAsShipped(orderId: string, userId: string) {
-        const order = await this.prisma.order.findFirst({
-            where: {
-                orderId,
-                product: {
-                    userId,
+        return this.prisma.$transaction(async (tx) => {
+            const { count } = await tx.order.updateMany({
+                where: {
+                    orderId,
+                    status: OrderStatus.PENDING,
+                    product: {
+                        userId,
+                    },
                 },
-            },
-        });
+                data: {
+                    status: OrderStatus.SHIPPED,
+                    shippedAt: new Date(),
+                },
+            });
 
-        if (!order) {
-            throw new NotFoundException(`Order not found with id ${orderId}`);
-        }
+            if (count === 0) {
+                const exists = await tx.order.findFirst({
+                    where: {
+                        orderId,
+                        product: {
+                            userId,
+                        },
+                    },
+                    select: {
+                        id: true,
+                    },
+                });
 
-        if (order.status !== OrderStatus.PENDING) {
-            throw new BadRequestException(`Order is not in pending status`);
-        }
+                if (!exists) {
+                    throw new NotFoundException(
+                        `Order not found with id ${orderId}`
+                    );
+                }
 
-        return this.prisma.order.update({
-            where: {
-                id: order.id,
-            },
-            data: {
-                status: OrderStatus.SHIPPED,
-                shippedAt: new Date(),
-            },
+                throw new ConflictException("Order has already been processed");
+            }
+
+            return {
+                message: "Order marked as shipped successfully",
+            };
         });
     }
 
     async markAsDelivered(orderId: string, userId: string) {
-        const order = await this.prisma.order.findFirst({
-            where: {
-                orderId,
-                userId,
-            },
-        });
+        return this.prisma.$transaction(async (tx) => {
+            const { count } = await tx.order.updateMany({
+                where: {
+                    orderId,
+                    userId,
+                    status: OrderStatus.SHIPPED,
+                },
+                data: {
+                    status: OrderStatus.DELIVERED,
+                    deliveredAt: new Date(),
+                },
+            });
 
-        if (!order) {
-            throw new NotFoundException(`Order not found with id ${orderId}`);
-        }
+            if (count === 0) {
+                const exists = await tx.order.findFirst({
+                    where: {
+                        orderId,
+                        userId,
+                    },
+                    select: {
+                        id: true,
+                    },
+                });
 
-        if (order.status !== OrderStatus.SHIPPED) {
-            throw new BadRequestException(`Order is not in shipped status`);
-        }
+                if (!exists) {
+                    throw new NotFoundException(
+                        `Order not found with id ${orderId}`
+                    );
+                }
 
-        return this.prisma.order.update({
-            where: {
-                id: order.id,
-            },
-            data: {
-                status: OrderStatus.DELIVERED,
-                deliveredAt: new Date(),
-            },
+                throw new ConflictException("Order has already been processed");
+            }
+
+            return {
+                message: "Order marked as delivered successfully",
+            };
         });
     }
 
@@ -342,10 +370,6 @@ export class OrderService {
                 throw new NotFoundException(
                     `Order not found with id ${orderId}`
                 );
-            }
-
-            if (order.status !== OrderStatus.PENDING) {
-                throw new BadRequestException("Order is not in pending status");
             }
 
             const { count } = await tx.order.updateMany({
