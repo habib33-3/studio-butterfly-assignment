@@ -6,6 +6,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { validateEnv } from "./common/env/env.config";
 import { PrismaModule } from "./common/prisma/prisma.module";
+import { OrderModule } from "./modules/order/order.module";
 import { ProductModule } from "./modules/product/product.module";
 import { JwtAuthGuard } from "./modules/user/guard/auth.guard";
 import { UserModule } from "./modules/user/user.module";
@@ -16,6 +17,7 @@ import { UserModule } from "./modules/user/user.module";
         PrismaModule,
         UserModule,
         ProductModule,
+        OrderModule,
     ],
     controllers: [AppController],
     providers: [
