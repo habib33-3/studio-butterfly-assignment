@@ -1,0 +1,53 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: studio-butterfly-assignment
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: "mysql://studio:studio123@db:3306/studio_butterfly"
+      NODE_ENV: production
+
+      # Replace with your own secret if needed.
+      # Generate one with: openssl rand -base64 32
+      JWT_SECRET: "JgTZthw8+dw/OG3uHyq1AwsVQ4B+z35cbHRthd4tRgI="
+
+      ACCESS_TOKEN_EXPIRES: "1d"
+      PORT: "5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8
+    container_name: studio-butterfly-assignment-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "root123"
+      MYSQL_DATABASE: "studio_butterfly"
+      MYSQL_USER: "studio"
+      MYSQL_PASSWORD: "studio123"
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test:
+        ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    networks:
+      - app-network
+
+volumes:
+  db-data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
