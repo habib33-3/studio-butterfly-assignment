@@ -3,7 +3,6 @@ import { randomBytes } from "node:crypto";
 const prefix = (value: string): string => {
     const words = value.trim().split(/\s+/).filter(Boolean);
 
-    // Multi-word: use initials
     if (words.length > 1) {
         return words
             .map((word) => word[0])
@@ -12,7 +11,6 @@ const prefix = (value: string): string => {
             .toUpperCase();
     }
 
-    // Single-word: use first 3 alphanumeric characters
     return value
         .replace(/[^a-zA-Z0-9]/g, "")
         .slice(0, 3)

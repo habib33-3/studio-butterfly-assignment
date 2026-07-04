@@ -2,6 +2,7 @@ import {
     BadRequestException,
     ConflictException,
     Injectable,
+    InternalServerErrorException,
     NotFoundException,
 } from "@nestjs/common";
 
@@ -62,20 +63,41 @@ export class OrderService {
                 throw new BadRequestException("Insufficient stock");
             }
 
-            const orderId = generateOrderId(product.name, product.category);
-
             const total = payload.quantity * Number(product.price);
 
-            return tx.order.create({
-                data: {
-                    orderId,
-                    userId,
-                    productId: payload.productId,
-                    quantity: payload.quantity,
-                    address: payload.address,
-                    total,
-                },
-            });
+            const MAX_RETRIES = 3;
+
+            for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+                try {
+                    return await tx.order.create({
+                        data: {
+                            orderId: generateOrderId(
+                                product.name,
+                                product.category
+                            ),
+                            userId,
+                            productId: payload.productId,
+                            quantity: payload.quantity,
+                            address: payload.address,
+                            total,
+                        },
+                    });
+                } catch (error) {
+                    if (
+                        error instanceof Prisma.PrismaClientKnownRequestError &&
+                        error.code === "P2002" &&
+                        attempt < MAX_RETRIES
+                    ) {
+                        continue;
+                    }
+
+                    throw error;
+                }
+            }
+
+            throw new InternalServerErrorException(
+                `Failed to generate a unique order ID after ${MAX_RETRIES} attempts.`
+            );
         });
     }
 
